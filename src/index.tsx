@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { ApolloProvider } from "@apollo/client";
-import { ChakraProvider } from "@chakra-ui/react";
 import { BrowserRouter } from "react-router-dom";
 import { client } from "./ApolloClient";
 import { db } from "./mockServer/db";
@@ -22,13 +21,11 @@ if (process.env.NODE_ENV === "development") {
 
 ReactDOM.render(
   <React.StrictMode>
-    <ChakraProvider>
-      <ApolloProvider client={client}>
-        <BrowserRouter>
-          <Books />
-        </BrowserRouter>
-      </ApolloProvider>
-    </ChakraProvider>
+    <ApolloProvider client={client}>
+      <BrowserRouter>
+        <Books />
+      </BrowserRouter>
+    </ApolloProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

@@ -1,10 +1,7 @@
 import * as React from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-import { Box, Heading, Link, ListItem, UnorderedList } from "@chakra-ui/layout";
 import { Query } from "../../graphql/generated-types";
-import { Button } from "@chakra-ui/button";
-import { Spinner } from "@chakra-ui/spinner";
 
 export const booksQuery = gql`
   query Books {
@@ -24,7 +21,7 @@ function BooksListing() {
     useQuery<{ books: Query["books"] }>(booksQuery);
 
   if (loading) {
-    return <Spinner />;
+    return <p>Loading...</p>;
   }
 
   if (error) {
@@ -33,20 +30,17 @@ function BooksListing() {
 
   return (
     <>
-      <Box mb={4}>
-        <Heading mb={4}>Books</Heading>
-        <UnorderedList>
-          {data?.books?.map((book) => (
-            <Link as={RouterLink} to={`/${book.id}`} key={book.id}>
-              <ListItem>{book.title}</ListItem>
-            </Link>
-          ))}
-        </UnorderedList>
-      </Box>
-
-      <Button as={RouterLink} to="/new">
-        Create new book
-      </Button>
+      <h1>Books</h1>
+      <ul>
+        {data?.books?.map((book) => (
+          <li key={book.id}>
+            <Link to={`/${book.id}`}>{book.title}</Link>
+          </li>
+        ))}
+      </ul>
+      <Link to="/new">
+        <button type="button">Create new book</button>
+      </Link>
     </>
   );
 }

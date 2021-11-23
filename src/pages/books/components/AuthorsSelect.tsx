@@ -1,8 +1,8 @@
 import * as React from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Author, Query } from "../../../graphql/generated-types";
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
-import { Select } from "@chakra-ui/select";
+import FieldWrapper from "./FieldWrapper";
+import Label from "./Label";
 
 const authorsQuery = gql`
   query Authors {
@@ -23,21 +23,23 @@ function AuthorsSelect({ value, onChange }: AuthorsSelectProps) {
     useQuery<{ authors: Query["authors"] }>(authorsQuery);
 
   return (
-    <FormControl id="authorId" isRequired>
-      <FormLabel>Author Id</FormLabel>
-      <Select
+    <FieldWrapper>
+      <Label htmlFor="authorId">Author Id</Label>
+      <select
+        id="authorId"
         placeholder="Select author"
         disabled={loading}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       >
+        <option value="">Select option</option>
         {data?.authors?.map((author: Author) => (
           <option value={author.id!} key={author.id!}>
             {author.name}
           </option>
         ))}
-      </Select>
-    </FormControl>
+      </select>
+    </FieldWrapper>
   );
 }
 

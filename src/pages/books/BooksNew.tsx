@@ -1,15 +1,11 @@
 import * as React from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router";
-import { Link as RouterLink } from "react-router-dom";
-import { FormControl, FormLabel } from "@chakra-ui/form-control";
-import { Input } from "@chakra-ui/input";
-import { Button } from "@chakra-ui/button";
-import { Box, Link } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/toast";
+import { Link } from "react-router-dom";
 import AuthorsSelect from "./components/AuthorsSelect";
-import { bookQuery } from "./BooksDetails";
+import FieldWrapper from "./components/FieldWrapper";
 import { booksQuery } from "./BooksListing";
+import Label from "./components/Label";
 
 const createBookMutation = gql`
   mutation CreateBook($input: BookInput) {
@@ -30,48 +26,44 @@ function BooksNew() {
 
   const [createBook, { loading }] = useMutation(createBookMutation, {
     variables: { input: { title, authorId } },
-    refetchQueries: [bookQuery, booksQuery],
+    awaitRefetchQueries: true,
+    refetchQueries: [{ query: booksQuery }],
   });
 
   const navigate = useNavigate();
-
-  const toast = useToast();
 
   const handleSubmit = async () => {
     try {
       const res = await createBook();
 
       if (res.data) {
-        toast({ title: "Book created", status: "success" });
+        console.log("Book created", res.data);
         navigate("/");
       }
     } catch (error) {
-      toast({ title: "Failed to create book", status: "error" });
+      console.log("Failed to create book", error);
     }
   };
 
   return (
     <>
-      <Link as={RouterLink} to="/">
-        Back to listing
-      </Link>
-      <Box mb={4}>
-        <FormControl id="title" isRequired>
-          <FormLabel>Title</FormLabel>
-          <Input
-            placeholder="title"
-            value={title}
-            onChange={(event) => setTitle(event.target.value)}
-          />
-        </FormControl>
-        <AuthorsSelect
-          value={authorId}
-          onChange={(authorId) => setAuthorId(authorId)}
+      <Link to="/">Back to listing</Link>
+      <FieldWrapper>
+        <Label htmlFor="title">Title</Label>
+        <input
+          type="text"
+          id="title"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
         />
-      </Box>
-      <Button onClick={handleSubmit} disabled={loading}>
+      </FieldWrapper>
+      <AuthorsSelect
+        value={authorId}
+        onChange={(authorId) => setAuthorId(authorId)}
+      />
+      <button onClick={handleSubmit} disabled={loading}>
         Create book
-      </Button>
+      </button>
     </>
   );
 }
