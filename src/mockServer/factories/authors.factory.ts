@@ -1,9 +1,8 @@
-import { createFactory } from "typical-data";
+import { primaryKey } from "@mswjs/data";
 import { v4 } from "uuid";
 import faker from "faker";
-import { Author } from "../../graphql/generated-types";
 
-export const AuthorFactory = createFactory<Author>({
-  id: () => v4(),
+export const author = {
+  id: primaryKey(() => v4()),
   name: () => faker.name.findName(),
-});
+};

@@ -8,7 +8,7 @@ export const handlers = [
 
     return res(
       ctx.data({
-        book: db.books.find((book) => book.id === id),
+        book: db.book.findFirst({ where: { id: { equals: id } } }),
       })
     );
   }),
@@ -16,7 +16,7 @@ export const handlers = [
   graphql.query("Books", (req, res, ctx) => {
     return res(
       ctx.data({
-        books: db.books.all(),
+        books: db.book.getAll(),
       })
     );
   }),
@@ -26,7 +26,9 @@ export const handlers = [
     (req, res, ctx) => {
       const { title, authorId } = req.variables.input;
 
-      const author = db.authors.find((author) => author.id === authorId);
+      const author = db.author.findFirst({
+        where: { id: { equals: authorId } },
+      });
 
       if (!author) {
         return res(
@@ -41,7 +43,7 @@ export const handlers = [
         );
       }
 
-      const newBook = db.books.create({ title, author });
+      const newBook = db.book.create({ title, author });
 
       return res(
         ctx.data({

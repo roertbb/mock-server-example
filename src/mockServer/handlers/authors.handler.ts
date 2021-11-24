@@ -7,7 +7,7 @@ export const handlers = [
 
     return res(
       ctx.data({
-        author: db.authors.find((author) => author.id === id),
+        author: db.author.findFirst({ where: { id: { equals: id } } }),
       })
     );
   }),
@@ -15,7 +15,7 @@ export const handlers = [
   graphql.query("Authors", (req, res, ctx) => {
     return res(
       ctx.data({
-        authors: db.authors.all(),
+        authors: db.author.getAll(),
       })
     );
   }),

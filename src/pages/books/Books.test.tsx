@@ -4,17 +4,17 @@ import userEvent from "@testing-library/user-event";
 import { waitFor } from "@testing-library/dom";
 import { renderWithProviders } from "../../testUtils/render";
 import { db } from "../../mockServer/db";
-import { Author } from "../../graphql/generated-types";
 import Books from "./index";
 
 test("should allow a user to log in", async () => {
-  db.books.create({ title: "some book" });
-  db.books.create();
-  db.books.create();
+  const authorName = "Andrzej Pilipiuk";
+  const mockAuthor = db.author.create({ name: authorName });
+  db.author.create();
+  db.author.create();
 
-  db.authors.create();
-  db.authors.create();
-  const mockAuthor: Author = db.authors.create({ name: "Andrzej Pilipiuk" });
+  db.book.create({ title: "some book", author: mockAuthor });
+  db.book.create({ author: mockAuthor });
+  db.book.create({ author: mockAuthor });
 
   renderWithProviders(<Books />);
 
@@ -32,7 +32,7 @@ test("should allow a user to log in", async () => {
   const authorSelect = screen.getByRole("combobox", { name: "Author Id" });
   // wait for select to be enabled - options are loaded
   await waitFor(() => expect(authorSelect).toBeEnabled());
-  userEvent.selectOptions(authorSelect, mockAuthor.name);
+  userEvent.selectOptions(authorSelect, authorName);
 
   userEvent.click(screen.getByRole("button", { name: "Create book" }));
 
@@ -40,5 +40,12 @@ test("should allow a user to log in", async () => {
   await waitFor(() => expect(screen.getByText(bookTitle)).toBeInTheDocument());
 
   // assert that the results are stored in fake database
-  expect(db.books.find((book) => book.title === bookTitle)).toBeDefined();
+  expect(
+    db.book.findFirst({ where: { title: { equals: bookTitle } } })
+  ).toEqual(
+    expect.objectContaining({
+      title: bookTitle,
+      author: expect.objectContaining({ name: authorName }),
+    })
+  );
 });

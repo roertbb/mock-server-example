@@ -1,13 +1,9 @@
-import { createFactory } from "typical-data";
+import { oneOf, primaryKey } from "@mswjs/data";
 import { v4 } from "uuid";
 import faker from "faker";
-import { Book } from "../../graphql/generated-types";
 
-export const BookFactory = createFactory<Book>({
-  id: () => v4(),
-  title: "example name",
-  author: () => ({
-    id: v4(),
-    name: faker.name.findName(),
-  }),
-});
+export const book = {
+  id: primaryKey(() => v4()),
+  title: () => faker.random.words(3),
+  author: oneOf("author"),
+};
