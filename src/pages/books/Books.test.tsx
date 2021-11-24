@@ -7,14 +7,17 @@ import { db } from "../../mockServer/db";
 import Books from "./index";
 
 test("should allow a user to log in", async () => {
-  const authorName = "Andrzej Pilipiuk";
-  const mockAuthor = db.author.create({ name: authorName });
-  db.author.create();
-  db.author.create();
+  db.book.create({
+    title: "Atomic Habits",
+    author: db.author.create({ name: "James Clear" }),
+  });
+  db.book.create({
+    title: "Essentialism",
+    author: db.author.create({ name: "Greg McKeown" }),
+  });
 
-  db.book.create({ title: "some book", author: mockAuthor });
-  db.book.create({ author: mockAuthor });
-  db.book.create({ author: mockAuthor });
+  const authorName = "Andrzej Pilipiuk";
+  db.author.create({ name: authorName });
 
   renderWithProviders(<Books />);
 

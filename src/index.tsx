@@ -10,10 +10,17 @@ import Books from "./pages/books";
 if (process.env.NODE_ENV === "development") {
   const { worker } = require("./mockServer/browser");
 
-  const author = db.author.create({ name: "Andrzej Pilipuik" });
+  db.book.create({
+    title: "Atomic Habits",
+    author: db.author.create({ name: "James Clear" }),
+  });
+  db.book.create({
+    title: "Essentialism",
+    author: db.author.create({ name: "Greg McKeown" }),
+  });
   db.book.create({
     title: "Chronicles of Jakub Wędrowycz",
-    author,
+    author: db.author.create({ name: "Andrzej Pilipuik" }),
   });
 
   worker.start();

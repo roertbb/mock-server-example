@@ -35,8 +35,8 @@ function BooksDetails() {
   return (
     <>
       <Link to="/">Back to listing</Link>
-      <h1>{data?.book.title}</h1>
-      <p>Author: {data?.book.author.name}</p>
+      <h1>{data?.book?.title}</h1>
+      <p>Author: {data?.book?.author.name}</p>
     </>
   );
 }
