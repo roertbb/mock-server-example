@@ -3,6 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import { Author, Query } from "../../../graphql/generated-types";
 import FieldWrapper from "./FieldWrapper";
 import Label from "./Label";
+import { ErrorMessage, useField } from "formik";
 
 const authorsQuery = gql`
   query Authors {
@@ -14,24 +15,20 @@ const authorsQuery = gql`
 `;
 
 type AuthorsSelectProps = {
-  value?: string;
-  onChange: (authorId: string) => void;
+  id: string;
+  name: string;
 };
 
-function AuthorsSelect({ value, onChange }: AuthorsSelectProps) {
+function AuthorsSelect({ id, ...props }: AuthorsSelectProps) {
+  const [field] = useField(props);
+
   const { data, loading } =
     useQuery<{ authors: Query["authors"] }>(authorsQuery);
 
   return (
     <FieldWrapper>
       <Label htmlFor="authorId">Author Id</Label>
-      <select
-        id="authorId"
-        placeholder="Select author"
-        disabled={loading}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-      >
+      <select id={id} {...field} placeholder="Select author" disabled={loading}>
         <option value="">Select option</option>
         {data?.authors?.map((author: Author) => (
           <option value={author.id!} key={author.id!}>
@@ -39,6 +36,7 @@ function AuthorsSelect({ value, onChange }: AuthorsSelectProps) {
           </option>
         ))}
       </select>
+      <ErrorMessage name="authorId" component="div" />
     </FieldWrapper>
   );
 }

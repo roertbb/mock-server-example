@@ -4,11 +4,13 @@ import { db } from "../db";
 
 export const handlers = [
   graphql.query("Book", (req, res, ctx) => {
-    const { id } = req.variables;
+    const { isbn } = req.variables;
+
+    console.log({ isbn });
 
     return res(
       ctx.data({
-        book: db.book.findFirst({ where: { id: { equals: id } } }),
+        book: db.book.findFirst({ where: { isbn: { equals: isbn } } }),
       })
     );
   }),
@@ -24,7 +26,7 @@ export const handlers = [
   graphql.mutation<{ createBook: Book }, { input: BookInput }>(
     "CreateBook",
     (req, res, ctx) => {
-      const { title, authorId } = req.variables.input;
+      const { isbn, title, authorId } = req.variables.input;
 
       const author = db.author.findFirst({
         where: { id: { equals: authorId } },
@@ -43,11 +45,11 @@ export const handlers = [
         );
       }
 
-      const newBook = db.book.create({ title, author });
+      const newBook = db.book.create({ isbn, title, author });
 
       return res(
         ctx.data({
-          createBook: newBook,
+          createBook: { ...newBook, author },
         })
       );
     }

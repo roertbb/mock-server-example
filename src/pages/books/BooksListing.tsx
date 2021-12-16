@@ -6,7 +6,7 @@ import { Query } from "../../graphql/generated-types";
 export const booksQuery = gql`
   query Books {
     books {
-      id
+      isbn
       title
       author {
         id
@@ -33,8 +33,8 @@ function BooksListing() {
       <h1>Books</h1>
       <ul>
         {data?.books?.map((book) => (
-          <li key={book.id}>
-            <Link to={`/${book.id}`}>{book.title}</Link>
+          <li key={book.isbn}>
+            <Link to={`/${book.isbn}`}>{book.title}</Link>
           </li>
         ))}
       </ul>

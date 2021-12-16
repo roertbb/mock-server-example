@@ -5,9 +5,9 @@ import { Link } from "react-router-dom";
 import { Query } from "../../graphql/generated-types";
 
 export const bookQuery = gql`
-  query Book($id: ID) {
-    book(id: $id) {
-      id
+  query Book($isbn: ID) {
+    book(isbn: $isbn) {
+      isbn
       title
       author {
         id
@@ -18,10 +18,10 @@ export const bookQuery = gql`
 `;
 
 function BooksDetails() {
-  const { bookId } = useParams();
+  const { bookIsbn } = useParams();
   const { data, loading, error } = useQuery<{ book: Query["book"] }>(
     bookQuery,
-    { variables: { id: bookId } }
+    { variables: { isbn: bookIsbn } }
   );
 
   if (loading) {

@@ -1,16 +1,17 @@
 import * as React from "react";
-import { gql, useMutation } from "@apollo/client";
+import { ApolloError, gql, useMutation } from "@apollo/client";
 import { useNavigate } from "react-router";
 import { Link } from "react-router-dom";
 import AuthorsSelect from "./components/AuthorsSelect";
 import FieldWrapper from "./components/FieldWrapper";
 import { booksQuery } from "./BooksListing";
 import Label from "./components/Label";
+import { ErrorMessage, Field, Form, Formik } from "formik";
 
 const createBookMutation = gql`
   mutation CreateBook($input: BookInput) {
     createBook(input: $input) {
-      id
+      isbn
       title
       author {
         id
@@ -20,50 +21,66 @@ const createBookMutation = gql`
   }
 `;
 
-function BooksNew() {
-  const [title, setTitle] = React.useState("");
-  const [authorId, setAuthorId] = React.useState<string | undefined>(undefined);
+const initialValues = {
+  isbn: "",
+  title: "",
+  authorId: "",
+};
 
-  const [createBook, { loading }] = useMutation(createBookMutation, {
-    variables: { input: { title, authorId } },
+function BooksNew() {
+  const [createBook] = useMutation(createBookMutation, {
     awaitRefetchQueries: true,
     refetchQueries: [{ query: booksQuery }],
   });
 
   const navigate = useNavigate();
 
-  const handleSubmit = async () => {
-    try {
-      const res = await createBook();
-
-      if (res.data) {
-        console.log("Book created", res.data);
-        navigate("/");
-      }
-    } catch (error) {
-      console.log("Failed to create book", error);
-    }
-  };
-
   return (
     <>
       <Link to="/">Back to listing</Link>
-      <FieldWrapper>
-        <Label htmlFor="title">Title</Label>
-        <input
-          type="text"
-          id="title"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
-      </FieldWrapper>
-      <AuthorsSelect
-        value={authorId}
-        onChange={(authorId) => setAuthorId(authorId)}
-      />
-      <button onClick={handleSubmit} disabled={loading}>
-        Create book
-      </button>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={async (values, { setErrors }) => {
+          try {
+            const res = await createBook({ variables: { input: values } });
+
+            if (res.data) {
+              navigate("/");
+            }
+          } catch (error) {
+            if (error instanceof ApolloError) {
+              error.graphQLErrors.forEach(({ path, message }) => {
+                const field = path?.[path?.length - 1];
+                if (field) {
+                  setErrors({ [field]: message });
+                }
+              });
+            }
+          }
+        }}
+      >
+        {({ isSubmitting }) => (
+          <Form>
+            <FieldWrapper>
+              <Label htmlFor="isbn">ISBN</Label>
+              <Field id="isbn" name="isbn" type="text" />
+              <ErrorMessage name="isbn" component="div" />
+            </FieldWrapper>
+
+            <FieldWrapper>
+              <Label htmlFor="title">Title</Label>
+              <Field id="title" name="title" type="text" />
+              <ErrorMessage name="title" component="div" />
+            </FieldWrapper>
+
+            <AuthorsSelect id="authorId" name="authorId" />
+
+            <button type="submit" disabled={isSubmitting}>
+              Create book
+            </button>
+          </Form>
+        )}
+      </Formik>
     </>
   );
 }

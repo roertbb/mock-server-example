@@ -26,13 +26,14 @@ export type AuthorInput = {
 export type Book = {
   __typename?: 'Book';
   author: Author;
-  id?: Maybe<Scalars['ID']>;
+  isbn: Scalars['ID'];
   title: Scalars['String'];
 };
 
 export type BookInput = {
   __typename?: 'BookInput';
   authorId: Scalars['ID'];
+  isbn: Scalars['ID'];
   title: Scalars['String'];
 };
 
@@ -67,5 +68,5 @@ export type QueryAuthorArgs = {
 
 
 export type QueryBookArgs = {
-  id?: InputMaybe<Scalars['ID']>;
+  isbn?: InputMaybe<Scalars['ID']>;
 };

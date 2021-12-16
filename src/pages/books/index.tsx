@@ -9,7 +9,7 @@ function Books() {
     <Routes>
       <Route path="/" element={<BooksListing />} />
       <Route path="/new" element={<BooksNew />} />
-      <Route path="/:bookId" element={<BooksDetails />} />
+      <Route path="/:bookIsbn" element={<BooksDetails />} />
     </Routes>
   );
 }
