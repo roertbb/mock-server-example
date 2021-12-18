@@ -6,8 +6,6 @@ export const handlers = [
   graphql.query("Book", (req, res, ctx) => {
     const { isbn } = req.variables;
 
-    console.log({ isbn });
-
     return res(
       ctx.data({
         book: db.book.findFirst({ where: { isbn: { equals: isbn } } }),
@@ -30,21 +28,7 @@ export const handlers = [
 
       const author = db.author.findFirst({
         where: { id: { equals: authorId } },
-      });
-
-      if (!author) {
-        return res(
-          ctx.errors([
-            {
-              message: "Author not found",
-              extensions: {
-                id: authorId,
-              },
-            },
-          ])
-        );
-      }
-
+      })!;
       const newBook = db.book.create({ isbn, title, author });
 
       return res(

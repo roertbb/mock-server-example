@@ -103,9 +103,8 @@ test("should show an error when book with given ISBN already exists", async () =
   const isbnInput = screen.getByRole("textbox", { name: "ISBN" });
   userEvent.type(isbnInput, book.isbn);
 
-  const title = "Chronicles of Jakub Wędrowycz";
   const titleInput = screen.getByRole("textbox", { name: "Title" });
-  userEvent.type(titleInput, title);
+  userEvent.type(titleInput, book.title);
 
   const authorSelect = screen.getByRole("combobox", { name: "Author Id" });
   // wait for select to be enabled - options are loaded
